@@ -1,0 +1,365 @@
+#include <iostream>
+#include <fstream>
+#include <stdlib.h>
+#include <conio.h>
+#include <string.h>
+using namespace std;
+fstream myfile;
+fstream student;
+string s[100];
+class library
+{
+protected:
+    struct Node
+    {
+        string name, author, type, adress, roll;
+
+        Node *next_add;
+    };
+
+public:
+    Node *head = NULL;
+    virtual void action() = 0;
+    string pasw()
+    {
+        string userinput;
+        string passward = "case";
+        cout << "Enter Passward" << endl;
+        cin >> userinput;
+        if (userinput != passward)
+        {
+            cout << "To mera putr chuti kar chal" << endl;
+            cin >> userinput;
+            while (userinput != passward)
+            {
+                cout << "Teeto patyan na la" << endl;
+                cin >> userinput;
+            }
+        }
+        else
+        {
+            cout << "Passward accepted" << endl;
+        }
+    }
+    void search_update(string n);
+    void student_delete();
+    void student_details();
+};
+class insert : public library
+{
+public:
+    Node *new_node = new Node;
+    void action()
+    {
+        cout << "\n\n Enter Book Name :";
+        cin >> new_node->name;
+        cout << "\n\n Enter Author Name :";
+        cin >> new_node->author;
+        cout << "\n\n Enter Book Type:";
+        cin >> new_node->type;
+        myfile.open("library.txt", ios::out | ios::app);
+        myfile << "Name_:_" << new_node->name << "_|_Author:_" << new_node->author << "_|_Type:_" << new_node->type << endl;
+        myfile.close();
+        new_node->next_add = NULL;
+        if (head == NULL)
+        {
+            head = new_node;
+        }
+        else
+        {
+            Node *ptr = head;
+            while (ptr->next_add != NULL)
+            {
+                ptr = ptr->next_add;
+            }
+            ptr = new_node;
+        }
+        cout << "\n\n\t\t\t New book saved.....";
+    }
+};
+void library::search_update(string n)
+{
+    int i, k = 0;
+    string ss;
+    myfile.open("library.txt", ios::in);
+    while (!myfile.eof())
+    {
+        myfile >> ss[k];
+        k++;
+    }
+    k--;
+    myfile.close();
+    for (i = 0; i < k; i++)
+    {
+        if (s[i].find(n) > 0 && s[i].find(n) < s[i].length())
+        {
+            break;
+        }
+    }
+    if (i != k)
+    {
+        char mod;
+        cout << "Do you want to modify book data..??(Y/N) ";
+        cin >> mod;
+        if (mod == 'y' || mod == 'Y')
+        {
+            string n, an, tp;
+            cout << "Enter book name" << endl;
+            cin >> n;
+            cout << "Enter Author name" << endl;
+            cin >> an;
+            cout << "Enter Book type" << endl;
+            cin >> tp;
+            s[i] = "Name_:_" + n + "_|_Author:_" + an + "_|_Type_:_" + tp;
+            myfile.open("library.txt", ios::out);
+            for (int m = 0; m < k; m++)
+            {
+                myfile << s[m] << endl;
+                myfile.close();
+            }
+        }
+    }
+    else
+    {
+        cout << "\n Record not found" << endl;
+    }
+}
+class display : public library
+{
+    int i = 0;
+
+public:
+    void action()
+    {
+        myfile.open("library.txt", ios::in);
+        while (!(myfile.eof()))
+        {
+            myfile >> s[i];
+            cout << s[i] << endl;
+            i++;
+        }
+        myfile.close();
+    }
+};
+class destroy : public library
+{
+    int k;
+    int v;
+    int del;
+
+public:
+    void action()
+    {
+
+        myfile.open("library.txt", ios::in);
+        k = 0;
+        while (myfile.good())
+        {
+            myfile >> s[k];
+            cout << k + 1 << "-" << s[k] << endl;
+            k++;
+        }
+        myfile.close();
+        cout << "Which Book data do you want to delete....." << endl;
+        cin >> del;
+        s[del - 1] = " ";
+        cout << "Record has been deleted" << endl;
+        myfile.open("library.txt", ios::out);
+        for (v = 0; v < k; v++)
+            myfile << s[v] << endl;
+        myfile << endl;
+        myfile.close();
+    }
+};
+class student_insert : public library
+
+{
+public:
+    void action()
+    {
+        Node *new_node = new Node;
+        cout << "\n\n Enter student Name :";
+        cin >> new_node->name;
+        cout << "\n\n Enter Student adress :";
+        cin >> new_node->adress;
+        cout << "\n\n Enter student roll number:";
+        cin >> new_node->roll;
+        cout << "\n\n Book name to be issued:";
+        cin >> new_node->name;
+        student.open("data.txt", ios::out | ios::app);
+        student << "Name_:_" << new_node->name << "_|_Adress:_" << new_node->adress << "_|_Rollno:_" << new_node->roll << "_|_Book_Issued:_" << new_node->name << endl;
+        student.close();
+        new_node->next_add = NULL;
+        if (head == NULL)
+        {
+            head = new_node;
+        }
+        else
+        {
+            Node *ptr = head;
+            while (ptr->next_add != NULL)
+            {
+                ptr = ptr->next_add;
+            }
+            ptr = new_node;
+        }
+        cout << "\n\n\t\t\t Student data saved.....";
+    }
+};
+void library::student_delete()
+{
+    int k;
+    int v;
+    int del;
+
+    student.open("data.txt", ios::in);
+    k = 0;
+    while (student.good())
+    {
+        student >> s[k];
+        cout << k + 1 << "-" << s[k] << endl;
+        k++;
+    }
+    student.close();
+    cout << "Which student data do you want to delete....." << endl;
+    cin >> del;
+    s[del - 1] = " ";
+    cout << "Record has been deleted" << endl;
+    student.open("data.txt", ios::out);
+    for (v = 0; v < k; v++)
+        student << s[v] << endl;
+    student << endl;
+    student.close();
+}
+void library::student_details()
+{
+    int i = 0;
+    student.open("data.txt", ios::in);
+    while (!(student.eof()))
+    {
+        student >> s[i];
+        cout << s[i] << endl;
+        i++;
+    }
+    student.close();
+}
+
+int main()
+{
+
+    library *ptr;
+    insert i;
+    student_insert i1;
+    display d;
+    destroy d1;
+    cout << "\n\t==========================================================\n\n";
+    cout << "\t\t\t NATIONAL LIBRARAY OF PAKISTAN\n\n";
+    cout << "\t===========================================================\n\n";
+    ptr->pasw();
+
+p:
+    int ch;
+    string n;
+    cout << "\n\t============================================\n\n";
+    cout << "\t\t\t Books Library\n";
+    cout << "\n\t============================================\n\n";
+    cout << "\n\t1- Can Enter new books\n";
+    cout << "\n\t2- Can update and search books data\n";
+    cout << "\n\t3- When a book is issued you can delete it from library\n";
+    cout << "\n\t4- You can see thhe list any time\n";
+    cout << "\n\t5- You can serach any book online\n";
+    do
+    {
+        cout << "\n\t============================================\n\n";
+        cout << "\t\t\t Books Library\n";
+        cout << "\n\t============================================\n\n";
+        cout << "\n\t 1. Save new book \n";
+        cout << "\n\t 2. Search and Modify \n";
+        cout << "\n\t 3. Delete any book \n";
+        cout << "\n\t 4. See all list \n";
+        cout << "\n\t 5. Read online books \n";
+        cout << "\n\t 6. Enter student details \n";
+        cout << "\n\t 7. Delete student details \n";
+        cout << "\n\t 8. Veiw all students \n";
+        cin >> ch;
+        system("CLS");
+        switch (ch)
+        {
+        case 1:
+            cout << "\n\t============================================\n\n";
+            cout << "\t\t\t Books Library\n";
+            cout << "\n\t============================================\n\n";
+            ptr = &i;
+            ptr->action();
+
+            break;
+        case 2:
+            cout << "\n\t============================================\n\n";
+            cout << "\t\t\t Books Library\n";
+            cout << "\n\t============================================\n\n";
+
+            cout << "\n\t==========Search & Update========\n\n";
+            cout << "Enter name of book search from libtrary" << endl;
+            cin >> n;
+            ptr->search_update(n);
+
+            break;
+        case 3:
+            cout << "\n\t============================================\n\n";
+            cout << "\t\t\t Books Library\n";
+            cout << "\n\t============================================\n\n";
+            ptr = &d1;
+            ptr->action();
+
+            break;
+        case 4:
+            cout << "\n\t============================================\n\n";
+            cout << "\t\t\t Books Library\n";
+            cout << "\n\t============================================\n\n";
+            cout << "\n\t==========list of Books========\n\n";
+            ptr = &d;
+            ptr->action();
+
+            break;
+        case 5:
+            cout << "\n\t============================================\n\n";
+            cout << "\t\t\t Books Library\n";
+            cout << "\n\t============================================\n\n";
+            cout << "\n\t==========Search Book online========\n\n";
+            system("cmd/c start https://books.google.com/");
+
+            break;
+        case 6:
+            cout << "\n\t============================================\n\n";
+            cout << "\t\t\t Student Mangement \n";
+            cout << "\n\t==========Enter student details========\n\n";
+            ptr = &i1;
+            ptr->action();
+
+            break;
+        case 7:
+            cout << "\n\t============================================\n\n";
+            cout << "\t\t\t Student Mangement \n";
+            cout << "\n\t==========Delete student details========\n\n";
+            ptr->student_delete();
+
+            break;
+        case 8:
+            cout << "\n\t============================================\n\n";
+            cout << "\t\t\t Student Mangement \n";
+            cout << "\n\t==========Student data========\n\n";
+            ptr->student_details();
+
+            break;
+        default:
+            cout << "\n\t============================================\n\n";
+            cout << "\t\t\t Books Library\n";
+            cout << "\n\t============================================\n\n";
+            cout << "Invalid Entery" << endl;
+        }
+
+    } while (ch > 0 & ch < 9);
+    cout << "\n\n======Please enter correct option======\n\n";
+    goto p;
+    getch();
+}
